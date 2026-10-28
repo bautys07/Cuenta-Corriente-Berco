@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Importar clientes</title>
+<style>body{font-family:system-ui,sans-serif;max-width:480px;margin:24px auto;padding:0 16px}input,button{font-size:16px;padding:12px;margin:6px 0;width:100%;box-sizing:border-box}#m{white-space:pre-wrap;margin-top:12px}</style></head><body>
+<h2>Importar clientes</h2><p>Se usa una sola vez, para pasar los clientes que ya estaban cargados.</p>
+<div id="l"><input id="c" type="email" placeholder="Correo"><input id="p" type="password" placeholder="Contraseña"><button id="e">Ingresar</button></div>
+<div id="i" style="display:none"><input id="f" type="file" accept=".json"><button id="g">Importar</button></div>
+<div id="m"></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)},m=function(t){$('m').textContent=t};
+firebase.initializeApp(FIREBASE_CONFIG);var au=firebase.auth(),fs=firebase.firestore();
+$('e').onclick=function(){au.signInWithEmailAndPassword($('c').value.trim(),$('p').value).then(function(){$('l').style.display='none';$('i').style.display='block';m('Elegí el archivo respaldo-clientes.json y tocá Importar.')}).catch(function(){m('Correo o contraseña incorrectos.')})};
+$('g').onclick=function(){var f=$('f').files[0];if(!f)return m('Elegí primero el archivo.');
+ f.text().then(function(t){var a=JSON.parse(t);if(!Array.isArray(a))throw 0;var b=fs.batch();a.forEach(function(x){b.set(fs.collection('clientes').doc(x.id),x.data)});return b.commit().then(function(){m('Listo: se importaron '+a.length+' clientes. Ya podés cerrar esta página.')})}).catch(function(){m('No se pudo importar. Revisá que el archivo sea el correcto y que tu usuario tenga permiso.')})};
+</script></body></html>
